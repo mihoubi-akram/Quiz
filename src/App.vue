@@ -1,47 +1,53 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <div class="container">
+      <div v-if="state === 'error'"> 
+        <p>
+          Impossible de charger le quiz
+        </p>
+      </div>
+      <div :aria-busy="state === 'loading'">
+        <Quiz :quiz="quiz" v-if="quiz"/>
+      </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
     </div>
   </header>
 
-  <main>
-    <TheWelcome />
-  </main>
 </template>
+<script setup>
+import Quiz from './components/Quiz.vue'
+import { onMounted, ref } from 'vue';
+const quiz = ref(null);
+const state = ref('loading');
+
+onMounted(()=>{
+   fetch('/data.json')
+    .then(r=>{
+      if(r.ok){
+        return r.json();
+      }
+      throw new Error('Impossible de recupérer le json')
+    })
+    .then(data=>{
+      quiz.value = data
+      state.value = 'idle'
+    })
+    .catch(e=>{
+      state.value = "error"
+    })
+})
+</script>
+
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.container {
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;   
+  padding: 20px; 
+  background-color: #f9f9f9; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 </style>
