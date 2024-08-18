@@ -4,7 +4,7 @@
         <ProgressBar :step="step" :maxStep="quiz.questions.length-1"></ProgressBar>
         <Question :key="question.question" :question="question" @answer="handleAnswer"></Question>
     </div>
-    <div v-else>
+    <div v-if="displayMode=='recap'">
       <Recap :answers ="answers" :quiz="quiz"></Recap>
     </div>
     
